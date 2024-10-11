@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquidation Explanation Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #555;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .output-container {
+            margin-top: 20px;
+        }
+        .output {
+            padding: 20px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            white-space: pre-wrap; /* 保持换行 */
+            color: #333;
+            position: relative;
+        }
+        .copy-button {
+            display: block;
+            margin: 10px auto 0;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 5px 10px;
+            font-size: 14px;
+            text-align: center;
+        }
+        .copy-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Liquidation Explanation Generator</h1>
+        <label for="walletBalance">Wallet Balance:</label>
+        <input type="text" id="walletBalance">
+
+        <label for="unrealisedPnl">Unrealised PNL:</label>
+        <input type="text" id="unrealisedPnl">
+
+        <label for="maintenanceMargin">Maintenance Margin:</label>
+        <input type="text" id="maintenanceMargin">
+
+        <label for="time">Time:</label>
+        <input type="text" id="time">
+
+        <label for="tradingPair">Trading Pair:</label>
+        <input type="text" id="tradingPair">
+
+        <label for="markPrice">Mark Price:</label>
+        <input type="text" id="markPrice">
+
+        <label for="marginBalance">Margin Balance:</label>
+        <input type="text" id="marginBalance">
+
+        <button onclick="generateExplanation()">Generate Explanation</button>
+
+        <div class="output-container">
+            <div class="output" id="output"></div>
+            <button class="copy-button" onclick="copyToClipboard()">Copy</button>
+        </div>
+    </div>
+
+    <script>
+        function generateExplanation() {
+            const walletBalance = document.getElementById('walletBalance').value;
+            const unrealisedPnl = document.getElementById('unrealisedPnl').value;
+            const maintenanceMargin = document.getElementById('maintenanceMargin').value;
+            const time = document.getElementById('time').value;
+            const tradingPair = document.getElementById('tradingPair').value;
+            const markPrice = document.getElementById('markPrice').value;
+            const marginBalance = document.getElementById('marginBalance').value;
+
+            const explanation = `
+Thank you for waiting
+
+Regarding your question about the liquidation of your futures account, please allow us to explain it more clearly.
+
+First, please note that a liquidation is triggered when:
+Margin balance of the cross position = wallet balance +- PnL realized +- PnL not realized < Maintenance margin.
+
+Wallet Balance: ${walletBalance}
+Unrealised PNL: ${unrealisedPnl}
+Margin Balance = ${walletBalance} + ${unrealisedPnl}
+Maintenance Margin: ${maintenanceMargin}
+Margin Balance < Maintenance Margin
+
+Binance calculates the unrealized PnL with **Mark Price** instead of the Last Price, as unrealized PnL is the primary driver of liquidations. Please kindly refer to more details about the Mark Price and unrealized PnL through 
+https://www.binance.com/en/support/faq/mark-price-in-usd%E2%93%A2-margined-futures-360033525071
+
+According to the verification, on ${time} when the Mark Price of ${tradingPair} was ${markPrice} USDT, the total margin balance in your cross futures positions was ${marginBalance} USDT, while the required maintenance margin was ${maintenanceMargin} USDT. As the margin balance was less than the maintenance margin, your cross positions were liquidated.
+            `;
+
+            document.getElementById('output').innerText = explanation.trim();
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('output');
+            const text = output.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
