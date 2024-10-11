@@ -12,8 +12,9 @@
             padding: 0;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
+            align-items: flex-start; /* 修改为flex-start以允许内容从顶部开始 */
+            min-height: 100vh; /* 确保页面高度至少为视口高度 */
+            overflow-y: auto; /* 允许垂直滚动 */
         }
         .container {
             background-color: #fff;
@@ -22,6 +23,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             max-width: 600px;
             width: 100%;
+            margin-top: 20px; /* 添加顶部间距 */
         }
         h1 {
             text-align: center;
@@ -104,9 +106,6 @@
         <label for="markPrice">Mark Price:</label>
         <input type="text" id="markPrice">
 
-        <label for="marginBalance">Margin Balance:</label>
-        <input type="text" id="marginBalance">
-
         <button onclick="generateExplanation()">Generate Explanation</button>
 
         <div class="output-container">
@@ -117,13 +116,15 @@
 
     <script>
         function generateExplanation() {
-            const walletBalance = document.getElementById('walletBalance').value;
-            const unrealisedPnl = document.getElementById('unrealisedPnl').value;
-            const maintenanceMargin = document.getElementById('maintenanceMargin').value;
+            const walletBalance = parseFloat(document.getElementById('walletBalance').value);
+            const unrealisedPnl = parseFloat(document.getElementById('unrealisedPnl').value);
+            const maintenanceMargin = parseFloat(document.getElementById('maintenanceMargin').value);
             const time = document.getElementById('time').value;
             const tradingPair = document.getElementById('tradingPair').value;
-            const markPrice = document.getElementById('markPrice').value;
-            const marginBalance = document.getElementById('marginBalance').value;
+            const markPrice = parseFloat(document.getElementById('markPrice').value);
+
+            const marginBalance = walletBalance + unrealisedPnl;
+            const isLiquidated = marginBalance < maintenanceMargin;
 
             const explanation = `
 Thank you for waiting
@@ -135,9 +136,10 @@ Margin balance of the cross position = wallet balance +- PnL realized +- PnL not
 
 Wallet Balance: ${walletBalance}
 Unrealised PNL: ${unrealisedPnl}
-Margin Balance = ${walletBalance} + ${unrealisedPnl}
+Margin Balance = ${walletBalance} + ${unrealisedPnl} = ${marginBalance}
 Maintenance Margin: ${maintenanceMargin}
-Margin Balance < Maintenance Margin
+Margin Balance < Maintenance Margin: 
+${marginBalance} < ${maintenanceMargin} 
 
 Binance calculates the unrealized PnL with **Mark Price** instead of the Last Price, as unrealized PnL is the primary driver of liquidations. Please kindly refer to more details about the Mark Price and unrealized PnL through 
 https://www.binance.com/en/support/faq/mark-price-in-usd%E2%93%A2-margined-futures-360033525071
@@ -146,6 +148,10 @@ According to the verification, on ${time} when the Mark Price of ${tradingPair} 
             `;
 
             document.getElementById('output').innerText = explanation.trim();
+
+            // 滚动到页面顶部并将焦点设置到第一个输入框
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('walletBalance').focus();
         }
 
         function copyToClipboard() {
